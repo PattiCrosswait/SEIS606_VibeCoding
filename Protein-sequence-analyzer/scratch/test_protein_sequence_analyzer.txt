@@ -1,0 +1,393 @@
+Protein Sequence Analyzer Test Cases
+=====================================
+
+Purpose
+-------
+This test suite covers the Core Analysis, Biological Predictions, Comparison and Discovery,
+and Usability feature areas. Each test case should be run with a clean application state unless
+otherwise noted.
+
+Test Case Format
+----------------
+ID       Unique test identifier
+Precondition  Required starting state
+Steps    User or system actions
+Expected Result  Observable pass criteria
+
+
+1. CORE ANALYSIS
+================
+
+CA-001: Accept a valid raw amino-acid sequence
+Precondition: The analyzer page is open.
+Steps:
+1. Enter "MKWVTFISLLLLFSSAYSRGVFRRDTHKSEIAHRFKDLGE" in the sequence input.
+2. Select Analyze sequence.
+Expected Result:
+- The sequence is accepted as valid.
+- Length, molecular weight, theoretical pI, hydrophobicity, composition, and residue map update.
+- Results are labeled with units and understandable names.
+
+CA-002: Accept a FASTA record
+Precondition: The analyzer page is open.
+Steps:
+1. Enter a FASTA header followed by a valid sequence, for example:
+   >sample_protein
+   MKWVTFISLLLLFSSAYSRGVFRRDTHKSEIAHRFKDLGE
+2. Select Analyze sequence.
+Expected Result:
+- The FASTA header is removed from the analysis input.
+- The sequence is analyzed as the equivalent raw sequence.
+- The original user input remains available if it is displayed separately.
+
+CA-003: Normalize lowercase and whitespace
+Precondition: The analyzer page is open.
+Steps:
+1. Enter the same valid sequence using lowercase letters, spaces, and line breaks.
+2. Select Analyze sequence.
+Expected Result:
+- Case and permitted whitespace differences do not cause validation failure.
+- The normalized sequence produces the same deterministic results as the uppercase sequence.
+
+CA-004: Reject an empty sequence
+Precondition: The sequence input is empty.
+Steps:
+1. Select Analyze sequence.
+Expected Result:
+- A clear corrective validation message is shown.
+- No plausible-looking metrics are displayed or updated.
+- The input remains editable and no existing valid sequence is silently replaced.
+
+CA-005: Reject unsupported residues
+Precondition: The analyzer page is open.
+Steps:
+1. Enter a sequence containing unsupported characters, such as "MKWVZ123!".
+2. Select Analyze sequence.
+Expected Result:
+- Validation identifies the unsupported residue or characters.
+- Analysis does not run and stale results are not presented as current.
+- The user can correct the input without losing the sequence.
+
+CA-006: Handle a single-residue sequence
+Precondition: The analyzer page is open.
+Steps:
+1. Enter "A".
+2. Select Analyze sequence.
+Expected Result:
+- Length is 1 residue.
+- Molecular weight and composition are calculated without a division-by-zero or peptide-bond error.
+- The residue map and metrics remain readable.
+
+CA-007: Analyze a long representative sequence
+Precondition: The analyzer page is open.
+Steps:
+1. Paste a representative long protein sequence, such as a sequence of at least 1,000 valid residues.
+2. Select Analyze sequence.
+Expected Result:
+- The analysis completes without freezing the interface or crashing.
+- Results remain accurate and readable.
+- The sequence visualization does not cause uncontrolled layout overflow.
+
+CA-008: Verify deterministic results
+Precondition: A valid sequence is available.
+Steps:
+1. Analyze the sequence and record all displayed metrics.
+2. Analyze the identical sequence again.
+Expected Result:
+- Both analyses produce identical results.
+- No duplicate or conflicting result state appears.
+- The analysis version is shown when the implementation supports versioned calculations.
+
+CA-009: Verify residue composition totals
+Precondition: A valid sequence containing hydrophobic, polar, charged, and special residues is available.
+Steps:
+1. Analyze the sequence.
+2. Add the counts shown for all composition groups.
+Expected Result:
+- Group counts sum to the total sequence length.
+- Every residue is assigned to exactly one displayed group.
+
+CA-010: Verify safe rendering of user input
+Precondition: The analyzer page is open.
+Steps:
+1. Enter text containing HTML-like content, such as "<script>alert(1)</script>".
+2. Select Analyze sequence.
+Expected Result:
+- The content is treated as invalid input and rendered as text only.
+- No script executes and no unexpected markup is inserted into the page.
+
+
+2. BIOLOGICAL PREDICTIONS
+==========================
+
+BP-001: Detect a likely signal peptide
+Precondition: The analyzer supports signal-peptide prediction and the sample signal-peptide sequence is available.
+Steps:
+1. Analyze a sequence with a hydrophobic N-terminal signal region.
+Expected Result:
+- The application reports the predicted signal peptide and its residue range.
+- The result identifies the prediction method or source and includes confidence or limitations.
+
+BP-002: Detect likely transmembrane helices
+Precondition: The analyzer supports transmembrane prediction.
+Steps:
+1. Analyze a sequence containing a long hydrophobic membrane-spanning segment.
+Expected Result:
+- A likely transmembrane region is reported with start and end positions.
+- The prediction is visually distinguishable from confirmed experimental evidence.
+
+BP-003: Report no prediction when evidence is insufficient
+Precondition: A soluble sequence without a strong signal peptide or membrane segment is available.
+Steps:
+1. Analyze the sequence.
+Expected Result:
+- The application reports no strong prediction rather than inventing a feature.
+- The result explains that absence of a prediction is not proof of biological absence.
+
+BP-004: Identify known motifs and domains
+Precondition: The analyzer has motif or domain detection enabled and a sequence with a known motif is available.
+Steps:
+1. Analyze the sequence.
+Expected Result:
+- Matching motifs or domains are listed with names and residue positions.
+- Matches include the database or algorithm source and an appropriate confidence or score.
+
+BP-005: Display low-complexity or disordered regions
+Precondition: A sequence containing a low-complexity or disorder-prone region is available.
+Steps:
+1. Analyze the sequence.
+Expected Result:
+- The predicted region is highlighted with a clear legend.
+- The output identifies it as a prediction and does not present it as experimentally confirmed.
+
+BP-006: Display secondary-structure predictions
+Precondition: The analyzer supports secondary-structure prediction.
+Steps:
+1. Analyze a valid sequence.
+Expected Result:
+- Predicted helix, sheet, and coil regions are shown with positions.
+- The display includes a legend that does not rely on color alone.
+
+BP-007: Handle prediction service failure
+Precondition: The prediction service is unavailable or returns an error.
+Steps:
+1. Request a biological prediction.
+Expected Result:
+- The user sees a clear loading, failure, or retry state.
+- Core sequence metrics remain available if they were computed locally.
+- No failed prediction is shown as a valid result.
+
+BP-008: Preserve prediction provenance
+Precondition: At least one biological prediction is available.
+Steps:
+1. Open the prediction details.
+Expected Result:
+- The method, database or model, version, score/confidence, and limitations are visible.
+- The user can distinguish calculated facts from biological interpretation.
+
+
+3. COMPARISON AND DISCOVERY
+============================
+
+CD-001: Compare two saved sequences
+Precondition: Two valid sequences are saved in the protein library.
+Steps:
+1. Open Compare.
+2. Select both saved sequences.
+Expected Result:
+- Both sequences appear side by side.
+- Length, molecular weight, pI, hydrophobicity, composition, and other supported metrics are comparable.
+- Differences are labeled clearly and do not rely only on color.
+
+CD-002: Run pairwise sequence alignment
+Precondition: Two valid sequences are available.
+Steps:
+1. Start a pairwise alignment.
+2. Review the alignment output.
+Expected Result:
+- Matches, mismatches, insertions, and deletions are displayed with positions.
+- The alignment completes for sequences of different lengths.
+- The scoring method and gap assumptions are available.
+
+CD-003: Run multiple-sequence alignment
+Precondition: At least three valid sequences are available.
+Steps:
+1. Select the sequences for multiple alignment.
+2. Start the alignment.
+Expected Result:
+- All selected sequences are aligned and labeled.
+- Conserved positions are identifiable.
+- The application reports errors clearly if a sequence is invalid.
+
+CD-004: Search an external protein database
+Precondition: Database lookup is configured and network access is available.
+Steps:
+1. Enter a valid accession or sequence.
+2. Start a database search.
+Expected Result:
+- Matching records show name, accession, organism, and relevant length information.
+- The source database and retrieval time are identified.
+- Search results can be opened without losing the current analysis.
+
+CD-005: Handle no database matches
+Precondition: Database lookup is available.
+Steps:
+1. Search using a valid sequence or accession with no known match.
+Expected Result:
+- A clear no-results state is shown.
+- The user can revise the search or return to the analysis.
+- No unrelated result is presented as a match.
+
+CD-006: Filter and search the saved protein library
+Precondition: The library contains proteins with different names, accessions, and types.
+Steps:
+1. Search by protein name.
+2. Search by accession.
+3. Filter by protein type.
+4. Clear the search and filter.
+Expected Result:
+- Each filter updates the displayed rows correctly.
+- Empty results show an informative empty state.
+- Clearing filters restores the complete library.
+
+CD-007: Compare sequences with missing optional metadata
+Precondition: A saved sequence has no accession, type, or prediction metadata.
+Steps:
+1. Add it to a comparison.
+Expected Result:
+- Missing values are displayed as unavailable rather than causing an error.
+- Available sequence-level comparisons still work.
+
+CD-008: Generate a reproducible comparison report
+Precondition: A comparison or alignment has completed.
+Steps:
+1. Export the comparison report.
+2. Open the exported report.
+Expected Result:
+- The report includes sequence identifiers, input sequences or references, methods, settings, results, and analysis version.
+- Exported values match the values shown in the application.
+
+
+4. USABILITY
+=============
+
+US-001: Load a sample sequence
+Precondition: The analyzer page is open and sample sequences are available.
+Steps:
+1. Select a sample sequence.
+Expected Result:
+- The sample is loaded into the input.
+- The sequence is analyzed or ready for analysis according to the interface contract.
+- The user receives a clear status message.
+
+US-002: Navigate between workspace sections
+Precondition: The application is open.
+Steps:
+1. Open Analyze, Saved sequences, Compare, Reports, and Preferences.
+Expected Result:
+- The selected section has a clear active state.
+- Navigation does not unexpectedly discard the current sequence or saved work.
+- Unavailable sections communicate their status rather than appearing broken.
+
+US-003: Use the application with a keyboard
+Precondition: The application is open.
+Steps:
+1. Navigate through inputs, buttons, menus, tables, and links using Tab and Shift+Tab.
+2. Activate controls using Enter or Space.
+Expected Result:
+- Every interactive control is reachable in a logical order.
+- Focus is visible.
+- No essential action requires a mouse.
+
+US-004: Verify accessible labels and status messages
+Precondition: The application is open.
+Steps:
+1. Inspect the input, charts, buttons, validation message, and result regions with an assistive technology or accessibility inspector.
+Expected Result:
+- Inputs and controls have meaningful accessible names.
+- Validation and analysis updates are announced or exposed as status changes.
+- Charts and color-coded residue groups have text or pattern alternatives.
+
+US-005: Verify responsive mobile layout
+Precondition: The application is open.
+Steps:
+1. Use the application at a narrow mobile viewport.
+2. Enter and analyze a sequence.
+3. Review metrics, map, insights, library, and controls.
+Expected Result:
+- Core input and results remain available without overlapping content.
+- Text and controls fit their containers.
+- Tables and long sequences have an intentional responsive or scrolling treatment.
+
+US-006: Verify responsive desktop layout
+Precondition: The application is open.
+Steps:
+1. Use the application at a wide desktop viewport.
+2. Resize the window across common desktop widths.
+Expected Result:
+- Panels remain aligned and readable.
+- No content is clipped or pushed outside the viewport.
+- Layout transitions occur without losing entered data or analysis state.
+
+US-007: Show analysis progress and recovery
+Precondition: An analysis or external prediction can take measurable time.
+Steps:
+1. Start the operation.
+2. Observe the interface while it is running.
+3. Force or simulate a failure, then retry.
+Expected Result:
+- A loading or progress state is visible.
+- Duplicate submissions are prevented or handled safely.
+- Failure includes a useful message and retry path.
+- Successful retry replaces the failed state with current results.
+
+US-008: Download a complete report
+Precondition: A valid sequence has been analyzed.
+Steps:
+1. Select Download report.
+2. Open the downloaded report.
+Expected Result:
+- The report downloads with a meaningful filename.
+- It includes the input or sequence identifier, normalized sequence, metrics, charts or tables, methods, assumptions, and limitations.
+- The report content matches the current analysis.
+
+US-009: Preserve data after validation failure
+Precondition: A valid sequence has been entered and analyzed.
+Steps:
+1. Modify the sequence to include an invalid character.
+2. Select Analyze sequence.
+Expected Result:
+- The validation error is shown.
+- The edited input remains intact for correction.
+- The previous results are clearly marked stale or remain available without being mislabeled as current.
+
+US-010: Maintain readable contrast and non-color cues
+Precondition: The application is open.
+Steps:
+1. Review validation states, residue groups, charts, buttons, and active navigation.
+2. View the application in grayscale or with color-vision simulation.
+Expected Result:
+- Status and residue categories remain understandable through text, labels, symbols, patterns, or tooltips.
+- Text and controls meet the project's contrast requirements.
+
+US-011: Prevent unbounded work during typing
+Precondition: The analyzer supports live validation or character counting.
+Steps:
+1. Paste a long representative sequence.
+2. Type, delete, and paste repeatedly.
+3. Observe responsiveness.
+Expected Result:
+- Input remains responsive.
+- Expensive analysis is not repeatedly triggered without an explicit action unless intentionally debounced.
+- The browser remains usable during edits.
+
+US-012: Keep user state during navigation and refresh-safe actions
+Precondition: A sequence is entered and analysis results are visible.
+Steps:
+1. Navigate to another workspace section and return.
+2. Trigger a report download.
+3. If persistence is supported, refresh the page and return to the analysis.
+Expected Result:
+- The application preserves or clearly communicates what state is retained.
+- Downloading or navigation does not clear the current sequence unexpectedly.
+- Any state that cannot be restored is explained to the user.
