@@ -10,8 +10,8 @@ contracts, fixtures, automated tests, and a quickstart guide.
 
 The application is partly complete in one area. Biological predictions now use
 a built-in deterministic heuristic provider with explicit provenance and
-limitations. External protein search still has an API boundary and explicit
-unavailable state because no database provider is configured.
+limitations. Protein search now uses the public UniProt REST API, with
+timeouts and explicit failure states.
 
 The submission package was missing a README, a completed test log, a written
 analysis, and presentation material. These documents have now been added.
@@ -20,9 +20,9 @@ still require real-world completion and should not be invented.
 
 ## Root causes
 
-1. **External provider integrations were intentionally scoped as unavailable
-   boundaries.** The built-in prediction provider avoids credentials but is
-   deliberately heuristic; specialist services still require provider
+1. **Specialist prediction integrations were intentionally scoped behind a
+   heuristic baseline.** The built-in prediction provider avoids credentials
+   but is deliberately heuristic; specialist services still require provider
    selection, rate limits, and provider-specific validation.
 2. **Browser checks are acceptance documents rather than a browser automation
    suite.** Unit and route tests provide useful coverage, but keyboard,
@@ -44,7 +44,7 @@ still require real-world completion and should not be invented.
 | 2 | Run an independent AI QA/security review and record verified/rejected findings | 30–60 minutes | Required AI-assisted review evidence |
 | 3 | Execute browser acceptance checks for keyboard, responsive layout, and report download | 45–90 minutes | Evidence for the unchecked browser scenarios |
 | 4 | Replace or supplement the built-in heuristic provider with a permitted specialist prediction service | 1–3 days | Higher-confidence predictions with provider-specific provenance, quotas, and failure handling |
-| 5 | Choose and configure a permitted protein database provider, if desired | 1–3 days | Real search results with accession, organism, length, source, and retrieval time |
+| 5 | Add a second protein database provider, if desired | 1–3 days | Cross-provider search and fallback coverage |
 | 6 | Add browser automation for the highest-value flows | 1–2 days | Repeatable coverage for the manual acceptance checks |
 
 The usability session and independent AI review are required for a complete

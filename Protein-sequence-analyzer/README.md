@@ -33,11 +33,13 @@ Open the local URL printed by Next.js, normally
 5. Select saved sequences and use **Compare** for pairwise or multiple-sequence
    alignment.
 6. Use **Reports** or **Download report** to export the current analysis.
+7. Use **Preferences** to search UniProt by accession or text.
 
 The core analysis and the built-in prediction provider run locally and
 deterministically. Local predictions are heuristic hypotheses with explicit
-methods and limitations; they are not experimental findings. External
-protein-search providers remain unavailable until a provider is configured.
+methods and limitations; they are not experimental findings. Protein
+discovery uses the public UniProt REST API and reports provider failures
+explicitly.
 
 ## Validation commands
 
@@ -64,8 +66,8 @@ npm run build
 ## Known limitations
 
 - The built-in prediction provider uses deterministic heuristics rather than
-  specialist biological databases. External protein database search remains
-  unavailable until a provider and credentials are configured.
+  specialist biological databases. Protein discovery uses the public UniProt
+  REST API with an eight-second timeout and short-lived server cache.
 - Browser acceptance checks are documented in
   [tests/browser/](./tests/browser/), but they are not an automated Playwright
   suite.

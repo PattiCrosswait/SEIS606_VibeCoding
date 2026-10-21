@@ -13,10 +13,9 @@ test("prediction route rejects missing sequence and returns sourced predictions"
   assert.ok(body.predictions.some((prediction: { featureType: string }) => prediction.featureType === "signal-peptide"));
 });
 
-test("protein search route exposes no-results and unavailable states", async () => {
+test("protein search route validates empty and oversized queries", async () => {
   const empty = await proteinSearch(new Request("http://localhost/api/protein-search", { method: "POST", body: "{}" }));
   assert.equal((await empty.json()).status, "no-results");
-  const unavailable = await proteinSearch(new Request("http://localhost/api/protein-search", { method: "POST", body: JSON.stringify({ query: "P12345" }) }));
-  assert.equal(unavailable.status, 503);
-  assert.equal((await unavailable.json()).status, "unavailable");
+  const oversized = await proteinSearch(new Request("http://localhost/api/protein-search", { method: "POST", body: JSON.stringify({ query: "x".repeat(201) }) }));
+  assert.equal(oversized.status, 400);
 });

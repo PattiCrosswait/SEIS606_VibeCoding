@@ -1,7 +1,30 @@
 import type { SavedProtein } from "./types";
 import type { SequenceAnalysis } from "@/lib/sequence/types";
+import { analyzeSequence } from "@/lib/sequence/analyze";
 
 const STORAGE_KEY = "protein-sequence-analyzer.library";
+const MAX_LIBRARY_ITEMS = 500;
+const MAX_SEQUENCE_LENGTH = 500_000;
+
+function isSavedProtein(value: unknown): value is SavedProtein {
+  if (!value || typeof value !== "object") return false;
+  const protein = value as Partial<SavedProtein>;
+  const summary = protein.analysisSummary;
+  return typeof protein.sequenceId === "string" &&
+    protein.sequenceId.length <= 200 &&
+    typeof protein.name === "string" &&
+    protein.name.length <= 200 &&
+    typeof protein.sequence === "string" &&
+    protein.sequence.length <= MAX_SEQUENCE_LENGTH &&
+    typeof protein.analyzedAt === "string" &&
+    Boolean(summary) &&
+    typeof summary?.length === "number" &&
+    typeof summary?.molecularWeight === "number" &&
+    typeof summary?.theoreticalPI === "number" &&
+    typeof summary?.hydrophobicity === "number" &&
+    [summary.length, summary.molecularWeight, summary.theoreticalPI, summary.hydrophobicity].every(Number.isFinite) &&
+    analyzeSequence(protein.sequence).status === "valid";
+}
 
 export function createSavedProtein(
   name: string,
@@ -28,7 +51,9 @@ export function readLibrary(): SavedProtein[] {
   if (typeof window === "undefined") return [];
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    return stored ? (JSON.parse(stored) as SavedProtein[]) : [];
+    const parsed: unknown = stored ? JSON.parse(stored) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(isSavedProtein).slice(0, MAX_LIBRARY_ITEMS);
   } catch {
     return [];
   }
