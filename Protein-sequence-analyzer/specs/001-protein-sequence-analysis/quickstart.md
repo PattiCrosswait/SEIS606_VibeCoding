@@ -65,6 +65,18 @@ npm run lint
 npm run build
 ```
 
+## PostgreSQL Persistence
+
+Set `DATABASE_URL` from `.env.example` before starting the application. The server creates
+the `saved_proteins` and `experimental_observations` tables automatically on first use; the
+same definitions are available in [database/schema.sql](../../database/schema.sql) for managed
+database migration workflows. Credentials stay in server-side environment variables and are
+never sent to the browser.
+
+When `DATABASE_URL` is absent, local development falls back to the existing SQLite library
+file for saved proteins. Experimental uploads remain available in the browser for comparison,
+but are not persisted until PostgreSQL is configured.
+
 ## Expected Outcome
 
 All 38 scenarios in the aggregated test file have a corresponding observable result. Any failure must identify the scenario, preserve user input where applicable, expose a clear status or corrective action, and avoid presenting unavailable or invalid results as successful.

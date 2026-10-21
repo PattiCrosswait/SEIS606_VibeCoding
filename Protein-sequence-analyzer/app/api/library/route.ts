@@ -4,7 +4,11 @@ import { deleteProtein, listSavedProteins, saveProtein } from "@/lib/protein/ser
 import type { SavedProtein } from "@/lib/protein/types";
 
 export async function GET() {
-  return NextResponse.json({ proteins: listSavedProteins() });
+  try {
+    return NextResponse.json({ proteins: await listSavedProteins() });
+  } catch {
+    return NextResponse.json({ message: "Database connection failed." }, { status: 503 });
+  }
 }
 
 export async function POST(request: Request) {
@@ -12,12 +16,20 @@ export async function POST(request: Request) {
   if (!body?.sequenceId || typeof body.sequence !== "string" || analyzeSequence(body.sequence).status !== "valid") {
     return NextResponse.json({ message: "A valid saved protein is required." }, { status: 400 });
   }
-  return NextResponse.json({ protein: saveProtein(body) }, { status: 201 });
+  try {
+    return NextResponse.json({ protein: await saveProtein(body) }, { status: 201 });
+  } catch {
+    return NextResponse.json({ message: "Database connection failed." }, { status: 503 });
+  }
 }
 
 export async function DELETE(request: Request) {
   const id = new URL(request.url).searchParams.get("id");
   if (!id) return NextResponse.json({ message: "A sequence id is required." }, { status: 400 });
-  deleteProtein(id);
-  return NextResponse.json({ status: "deleted" });
+  try {
+    await deleteProtein(id);
+    return NextResponse.json({ status: "deleted" });
+  } catch {
+    return NextResponse.json({ message: "Database connection failed." }, { status: 503 });
+  }
 }
