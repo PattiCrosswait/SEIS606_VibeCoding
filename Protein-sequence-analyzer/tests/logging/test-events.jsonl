@@ -1,0 +1,2 @@
+{"timestamp":"2026-10-21T20:28:29.387Z","level":"info","event":"test-log.initialized","testId":"LOG-01","actor":"automation","result":"deferred","context":{"details":"Append-only event-log format created; append execution evidence after each real test run."},"severity":"none"}
+{"timestamp":"2026-10-21T20:28:59.899Z","level":"info","event":"test.completed","testId":"AUT-UNIT-01","actor":"automation","result":"pass","context":{"command":"npm test","details":"10 tests passed, 0 failed, exit code 0"},"severity":"none"}
