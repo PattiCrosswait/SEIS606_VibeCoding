@@ -8,10 +8,10 @@ metrics, save valid sequences, compare saved sequences, and download reports.
 The repository includes the Spec Kit specification, plan, tasks, supporting
 contracts, fixtures, automated tests, and a quickstart guide.
 
-The application is partly complete in two areas. Biological predictions and
-external protein search have UI and explicit API contracts, but no provider is
-configured. Those paths correctly report an unavailable state and preserve the
-local analysis instead of displaying invented results.
+The application is partly complete in one area. Biological predictions now use
+a built-in deterministic heuristic provider with explicit provenance and
+limitations. External protein search still has an API boundary and explicit
+unavailable state because no database provider is configured.
 
 The submission package was missing a README, a completed test log, a written
 analysis, and presentation material. These documents have now been added.
@@ -20,9 +20,10 @@ still require real-world completion and should not be invented.
 
 ## Root causes
 
-1. **Provider integrations were intentionally scoped as unavailable
-   boundaries.** The core product was prioritized over credentials, external
-   service selection, rate limits, and provider-specific validation.
+1. **External provider integrations were intentionally scoped as unavailable
+   boundaries.** The built-in prediction provider avoids credentials but is
+   deliberately heuristic; specialist services still require provider
+   selection, rate limits, and provider-specific validation.
 2. **Browser checks are acceptance documents rather than a browser automation
    suite.** Unit and route tests provide useful coverage, but keyboard,
    responsive, download, and visual checks still require manual execution.
@@ -42,13 +43,15 @@ still require real-world completion and should not be invented.
 | 1 | Run the application and complete the usability session with one participant | 30–60 minutes | Completed usability evidence and concrete friction points |
 | 2 | Run an independent AI QA/security review and record verified/rejected findings | 30–60 minutes | Required AI-assisted review evidence |
 | 3 | Execute browser acceptance checks for keyboard, responsive layout, and report download | 45–90 minutes | Evidence for the unchecked browser scenarios |
-| 4 | Choose and configure a permitted prediction provider, if desired | 1–3 days | Real prediction results with provenance, confidence, limits, and failure handling |
+| 4 | Replace or supplement the built-in heuristic provider with a permitted specialist prediction service | 1–3 days | Higher-confidence predictions with provider-specific provenance, quotas, and failure handling |
 | 5 | Choose and configure a permitted protein database provider, if desired | 1–3 days | Real search results with accession, organism, length, source, and retrieval time |
 | 6 | Add browser automation for the highest-value flows | 1–2 days | Repeatable coverage for the manual acceptance checks |
 
-The first three steps are required for a complete course submission. The
-provider integrations are product extensions and are not required to claim
-that the current baseline works, provided their unavailable state is disclosed.
+The usability session and independent AI review are required for a complete
+course submission. Browser acceptance checks were executed locally and are
+recorded in [TEST-LOG.md](./TEST-LOG.md). The provider integrations are
+product extensions and are not required to claim that the current baseline
+works, provided their unavailable state is disclosed.
 
 ## Reflection
 

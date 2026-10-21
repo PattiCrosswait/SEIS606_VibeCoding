@@ -12,7 +12,7 @@ export function SidebarNav({ active, onChange }: { active: string; onChange: (la
   return <aside className="rail" aria-label="Primary navigation">
     <div className="logo"><span className="logo-mark">⌁</span>What&apos;s In My Protein</div>
     <nav className="nav-list">
-      {NAV.map(({ label, icon: Icon }) => <button key={label} type="button" className={`nav-button ${active === label ? "active" : ""}`} onClick={() => onChange(label)} aria-current={active === label ? "page" : undefined}><Icon size={17} aria-hidden="true" /><span className="nav-label">{label}</span></button>)}
+      {NAV.map(({ label, icon: Icon }) => <button key={label} type="button" className={`nav-button ${active === label ? "active" : ""}`} onClick={() => onChange(label)} aria-label={label} aria-current={active === label ? "page" : undefined}><Icon size={17} aria-hidden="true" /><span className="nav-label">{label}</span></button>)}
     </nav>
   </aside>;
 }

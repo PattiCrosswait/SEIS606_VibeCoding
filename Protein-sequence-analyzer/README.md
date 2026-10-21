@@ -34,10 +34,10 @@ Open the local URL printed by Next.js, normally
    alignment.
 6. Use **Reports** or **Download report** to export the current analysis.
 
-The core analysis runs locally and deterministically. Prediction and external
-protein-search providers are intentionally represented as unavailable until a
-provider is configured; the application does not present unavailable results as
-successful results.
+The core analysis and the built-in prediction provider run locally and
+deterministically. Local predictions are heuristic hypotheses with explicit
+methods and limitations; they are not experimental findings. External
+protein-search providers remain unavailable until a provider is configured.
 
 ## Validation commands
 
@@ -63,9 +63,9 @@ npm run build
 
 ## Known limitations
 
-- Biological prediction and external database search return an explicit
-  unavailable state because no provider credentials or external service is
-  configured.
+- The built-in prediction provider uses deterministic heuristics rather than
+  specialist biological databases. External protein database search remains
+  unavailable until a provider and credentials are configured.
 - Browser acceptance checks are documented in
   [tests/browser/](./tests/browser/), but they are not an automated Playwright
   suite.

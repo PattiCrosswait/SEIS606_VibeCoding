@@ -6,8 +6,11 @@ export function ReportDownload({ report, filename = "protein-analysis-report.txt
     const link = document.createElement("a");
     link.href = url;
     link.download = filename;
+    link.style.display = "none";
+    document.body.appendChild(link);
     link.click();
-    URL.revokeObjectURL(url);
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
   }
   return <Button type="button" onClick={download}>Download report</Button>;
 }

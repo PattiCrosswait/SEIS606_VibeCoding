@@ -58,8 +58,11 @@ export function AnalysisWorkspace() {
     const link = document.createElement("a");
     link.href = url;
     link.download = "protein-comparison-report.txt";
+    link.style.display = "none";
+    document.body.appendChild(link);
     link.click();
-    URL.revokeObjectURL(url);
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
   }
 
   return <div className="app-shell"><SidebarNav active={activeNav} onChange={setActiveNav} /><main className="main-content">

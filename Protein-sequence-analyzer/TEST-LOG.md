@@ -22,7 +22,7 @@ and the release checklist is in [PRE-FLIGHT.md](PRE-FLIGHT.md).
 | F-05 | Long sequence | Unit test using a 1,000-residue fixture | Analysis completes and composition totals equal sequence length | Fixed/verified | — |
 | F-06 | Markup-like input | Unit test using markup-like text | Input is rejected as a sequence and is treated as text rather than executable markup | Fixed/verified | — |
 | F-07 | Repeatability | Unit test analyzes identical input more than once | Results are deterministic and the analysis version is exposed | Fixed/verified | — |
-| F-08 | Prediction provider unavailable | Unit test posts to `/api/predictions` without a provider | The route returns an explicit unavailable response; core local analysis remains available | Deferred provider integration | Medium |
+| F-08 | Local prediction provider | Unit test and live POST to `/api/predictions` with a representative sequence | The route returns heuristic predictions with method, source, version, ranges, and limitations; unsupported features remain explicitly no-strong-signal | Fixed/verified | — |
 | F-09 | Protein-search provider unavailable | Unit test posts to `/api/protein-search` without a provider | The route returns an explicit unavailable response | Deferred provider integration | Medium |
 | F-10 | Pairwise and multiple alignment | Unit tests for two and three saved sequences | Matches, mismatches, gaps, and conserved positions are represented | Fixed/verified | — |
 | F-11 | Report contents | Unit test generates a comparison report | Report includes scoring assumptions and aligned sequences | Fixed/verified | — |
@@ -46,6 +46,20 @@ These probes were limited to this project.
 | S-02 | Exposed credentials or API keys | Searched tracked source and configuration for common key names and credential literals; inspected prediction/search route boundaries | No provider credentials are present in browser code or tracked configuration; provider routes return unavailable without configuration | Verified; provider setup remains deferred | Medium |
 | S-03 | Saved-state tampering | Inspected the local-library serialization and parsing path in `lib/protein/library.ts`; considered malformed JSON and structurally invalid JSON in local storage | Malformed JSON is discarded by the error path. Structurally invalid JSON is currently cast without schema validation and should be hardened before treating local storage as trusted | Deferred: add runtime schema validation and browser tampering coverage | Medium |
 | S-04 | Untrusted request body | Inspected both POST route handlers and route tests for missing/invalid sequence input | Missing sequence requests are rejected and unavailable responses are explicit | Verified | Low |
+
+## Browser acceptance checks
+
+Date executed: 2026-10-21
+Environment: local Next.js development server at `http://localhost:3000`
+
+| ID | What was tested | How | Result | Disposition |
+|---|---|---|---|---|
+| B-01 | Core analysis flow | Entered a FASTA/lowercase/whitespace sequence and selected **Analyze sequence** | Normalized sequence was analyzed and metrics updated to 3 residues | Verified |
+| B-02 | Invalid input recovery | Entered `ACD!` and selected **Analyze sequence** | Error status was displayed, input was preserved, and saving was disabled | Verified |
+| B-03 | Saved-library flow | Saved valid sequences, opened **Saved**, selected two records, and selected **Compare selected** | Saved records appeared and the comparison view displayed an alignment | Verified |
+| B-04 | Navigation accessibility | Inspected the navigation accessibility tree and activated Analyze, Saved, and Compare | Navigation buttons now expose accessible names and the active item exposes `aria-current="page"` | Fixed in `components/layout/sidebar-nav.tsx` |
+| B-05 | Responsive/long-content behavior | Inspected the responsive CSS and rendered residue map/alignment with scroll containers | Mobile layout rules and intentional horizontal/vertical scrolling are present | Verified by code and browser render |
+| B-06 | Report download control | Activated the comparison report download control | The control activated without an application error; the integrated browser did not expose a download event for independent file-content inspection | Manual file-content check remains recommended |
 
 ## Usability testing with another person
 
@@ -85,6 +99,9 @@ after running that review.
 
 ## Overall test status
 
-Automated functional and negative coverage passes. Provider-dependent features
-are explicitly unavailable rather than falsely successful. Human usability
-testing and the independent AI-assisted review remain submission-time actions.
+Automated functional, negative, and route coverage passes. Browser acceptance
+checks were executed locally; one accessibility issue was fixed during the
+check. Provider-dependent features are explicitly unavailable rather than
+falsely successful. Human usability testing and the independent AI-assisted
+review remain submission-time actions because they require a real participant
+and a separately selected review tool, respectively.

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { analyzeSequence, normalizeSequence } from "../../lib/sequence/analyze";
+import { predictLocally } from "../../lib/predictions/providers/local";
 
 test("normalizes FASTA headers, case, and whitespace", () => {
   const result = normalizeSequence(">sample\nmkwv tfis\n");
@@ -28,4 +29,15 @@ test("composition groups sum to long sequence length", () => {
   assert.equal(result.length, sequence.length);
   assert.equal(groupTotal, sequence.length);
   assert.deepEqual(result, analyzeSequence(sequence));
+});
+
+test("local prediction provider returns provenance and explicit no-signal results", () => {
+  const results = predictLocally("MKWVTFISLLLLFSSAYSRGVFRRDTHKSEIAHRFKDLGE");
+  const signal = results.find((result) => result.featureType === "signal-peptide");
+  const secondaryStructure = results.find((result) => result.featureType === "secondary-structure");
+  assert.equal(signal?.status, "available");
+  assert.equal(signal?.method, "Deterministic local heuristic");
+  assert.ok(signal?.features[0].residueRange);
+  assert.equal(secondaryStructure?.status, "no-strong-signal");
+  assert.deepEqual(secondaryStructure?.features, []);
 });
