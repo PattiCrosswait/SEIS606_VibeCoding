@@ -1,6 +1,6 @@
 ---
 
-description: "Executable task list for Protein Sequence Analysis"
+description: "Executable Next.js task list for Protein Sequence Analysis"
 ---
 
 # Tasks: Protein Sequence Analysis
@@ -9,204 +9,91 @@ description: "Executable task list for Protein Sequence Analysis"
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/ui-contract.md](./contracts/ui-contract.md), [quickstart.md](./quickstart.md)
 
-**Tests**: Validation tasks are included because the project constitution requires automated or repeatable checks for every user-visible behavior, including invalid, boundary, loading, and recovery states.
+## Phase 1: Setup
 
-**Organization**: Tasks are grouped by user story so each story can be implemented and validated as an independent increment after the shared foundation.
+- [X] T001 Initialize the Next.js TypeScript application scripts and dependencies in `package.json`.
+- [X] T002 [P] Configure TypeScript path aliases in `tsconfig.json` and Next.js settings in `next.config.ts`.
+- [X] T003 [P] Configure ESLint in `eslint.config.mjs` and repository ignores in `.gitignore`.
+- [X] T004 [P] Add the root app shell and metadata in `app/layout.tsx`, `app/globals.css`, and `app/page.tsx`.
+- [X] T005 [P] Add reusable shadcn/ui-style primitives in `components/ui/button.tsx`, `components/ui/card.tsx`, and `components/ui/textarea.tsx`.
 
-## Phase 1: Setup (Shared Infrastructure)
+## Phase 2: Foundational
 
-**Purpose**: Establish the validation and source structure without adding an unnecessary build system.
+- [X] T006 Create typed sequence entities and lifecycle states in `lib/sequence/types.ts`.
+- [X] T007 Implement normalization, validation, residue grouping, deterministic calculations, and analysis versioning in `lib/sequence/analyze.ts`.
+- [X] T008 [P] Add shared class-name utilities in `lib/utils.ts`.
+- [X] T009 [P] Add a worker-ready sequence analysis entry point in `workers/sequence-analysis.worker.ts`.
+- [X] T010 [P] Add explicit unavailable response contracts for optional integrations in `app/api/predictions/route.ts` and `app/api/protein-search/route.ts`.
 
-- [ ] T001 Create `tests/` with `tests/fixtures/`, `tests/browser/`, and `tests/unit/` directories for focused fixtures and repeatable browser checks.
-- [ ] T002 [P] Create `tests/fixtures/protein-sequences.json` with valid raw, FASTA, lowercase/whitespace, empty, unsupported, single-residue, 1,000-residue, signal-peptide, transmembrane, motif/domain, disorder, and secondary-structure inputs.
-- [ ] T003 [P] Create `tests/browser/test-cases.md` mapping the 38 scenarios in `scratch/test_protein_sequence_analyzer.txt` to browser steps and expected outcomes.
-- [ ] T004 [P] Create `tests/unit/sequence-analysis-cases.json` with expected normalization, length, composition-total, molecular-weight, hydrophobicity, and repeatability outcomes for representative fixtures.
+## Phase 3: User Story 1 - Analyze and Validate a Protein Sequence (Priority: P1) MVP
 
----
+**Goal**: Provide trustworthy local analysis for raw and FASTA sequence input.
 
-## Phase 2: Foundational (Blocking Prerequisites)
+**Independent Test**: Run the app, analyze valid raw, FASTA, lowercase/whitespace, single-residue, repeated, and long inputs, then submit empty and unsupported input and verify explicit results and error states.
 
-**Purpose**: Establish shared parsing, calculation, state, safe-rendering, and UI contracts before story-specific work.
-
-**⚠️ CRITICAL**: No user story implementation should be considered complete until these shared contracts are represented in `mockup/WhatsInMyProtein.html`.
-
-- [ ] T005 Refactor the inline sequence parsing and analysis logic in `mockup/WhatsInMyProtein.html` into named validation, normalization, calculation, and rendering functions with explicit status values from `specs/001-protein-sequence-analysis/data-model.md`.
-- [ ] T006 Implement shared analysis state in `mockup/WhatsInMyProtein.html` for `idle`, `editing`, `analyzing`, `valid`, `invalid`, and `stale`, preserving `originalInput` separately from `normalizedSequence`.
-- [ ] T007 Implement safe text rendering in `mockup/WhatsInMyProtein.html` so user sequence input and identifiers are never inserted as executable markup.
-- [ ] T008 [P] Add accessible names, live/status regions, visible focus styling, and text-based state cues in `mockup/WhatsInMyProtein.html` without relying on color alone.
-- [ ] T009 [P] Add responsive overflow rules in `mockup/WhatsInMyProtein.html` for residue maps, long sequences, tables, charts, and comparison content at mobile and desktop widths.
-- [ ] T010 Create `tests/unit/validate-sequence.mjs` as a repeatable check for empty input, malformed FASTA, unsupported residues, permitted whitespace/case normalization, safe-input handling, and preservation of invalid input.
-- [ ] T011 Create `tests/unit/calculate-sequence.mjs` as a repeatable check for single-residue and 1,000-residue inputs, metric determinism, and composition groups summing exactly to sequence length.
-
-**Checkpoint**: Shared parsing, state, safe rendering, accessibility, responsive behavior, and calculation checks are available; user-story work can proceed.
-
----
-
-## Phase 3: User Story 1 - Analyze and Validate a Protein Sequence (Priority: P1) 🎯 MVP
-
-**Goal**: Provide trustworthy, deterministic core sequence analysis for raw and FASTA inputs.
-
-**Independent Test**: Open `mockup/WhatsInMyProtein.html`, analyze valid raw, FASTA, lowercase/whitespace, single-residue, repeated, and 1,000-residue fixtures, then submit empty and unsupported inputs and verify the expected metrics, messages, and stale-state behavior.
-
-### Tests for User Story 1
-
-- [ ] T012 [P] [US1] Add core analysis acceptance checks for the raw, FASTA, lowercase/whitespace, empty, unsupported, single-residue, long-sequence, deterministic, and safe-rendering scenarios in `tests/browser/core-analysis.md`.
-- [ ] T013 [P] [US1] Add expected-output fixtures for length, molecular weight, theoretical pI, hydrophobicity, residue groups, and residue-map positions in `tests/unit/sequence-analysis-cases.json`.
-
-### Implementation for User Story 1
-
-- [ ] T014 [US1] Implement FASTA-header removal, permitted-whitespace normalization, uppercase normalization, and invalid-character reporting in `mockup/WhatsInMyProtein.html`, preserving the exact `originalInput`.
-- [ ] T015 [US1] Implement deterministic core calculations in `mockup/WhatsInMyProtein.html` for length, molecular weight, theoretical pI, hydrophobicity, composition, and residue-map data with units, definitions, and analysis version.
-- [ ] T016 [US1] Render valid core results in `mockup/WhatsInMyProtein.html` with readable metric labels, composition totals, position-aware residue text, and non-color residue-category cues.
-- [ ] T017 [US1] Implement invalid-submission behavior in `mockup/WhatsInMyProtein.html` so empty, malformed, unsupported, and markup-like input shows corrective status, preserves edited text, and does not replace current results with misleading values.
-- [ ] T018 [US1] Implement explicit analysis progress and completion status in `mockup/WhatsInMyProtein.html` while preventing unnecessary repeated analysis during typing or paste events.
-
-**Checkpoint**: User Story 1 is independently usable and satisfies the core-analysis acceptance scenarios.
-
----
+- [X] T011 [US1] Create the client analysis workspace state and explicit Analyze action in `components/analysis/analysis-workspace.tsx`.
+- [X] T012 [US1] Render length, molecular weight, theoretical pI, hydrophobicity, composition-derived interpretation, analysis version, and residue map in `components/analysis/analysis-workspace.tsx`.
+- [X] T013 [US1] Preserve original input, display corrective invalid-input status, and avoid success-shaped metrics for invalid sequences in `components/analysis/analysis-workspace.tsx`.
+- [X] T014 [US1] Add focused regression fixtures and executable checks for normalization, unsupported residues, single-residue calculations, long sequences, composition totals, and deterministic repeatability in `tests/unit/sequence-analysis.test.ts`.
 
 ## Phase 4: User Story 4 - Use the Analyzer Accessibly and Reliably (Priority: P1)
 
-**Goal**: Make the analyzer keyboard-accessible, responsive, recoverable, and safe to use across supported viewports.
+**Goal**: Provide reusable navigation, keyboard access, responsive behavior, progress/recovery states, and complete reports.
 
-**Independent Test**: Use only keyboard controls to load a sample, analyze a sequence, navigate sections, filter the library, and request a report; repeat at narrow mobile and wide desktop widths while observing status messages and focus.
+**Independent Test**: Navigate with keyboard, load samples, resize the page, inspect status announcements, and download a report without losing the current sequence.
 
-### Tests for User Story 4
-
-- [ ] T019 [P] [US4] Create `tests/browser/usability.md` with keyboard-only, accessible-name, status-announcement, non-color, mobile-layout, desktop-layout, progress/retry, navigation-state, and report-download checks.
-- [ ] T020 [P] [US4] Create `tests/browser/accessibility-checklist.md` with repeatable checks for focus order, visible focus, semantic labels, live status updates, contrast, and text alternatives.
-
-### Implementation for User Story 4
-
-- [ ] T021 [US4] Implement sample-sequence loading and status feedback in `mockup/WhatsInMyProtein.html` without discarding the current input unexpectedly.
-- [ ] T022 [US4] Implement functional navigation states for Analyze, Saved sequences, Compare, Reports, and Preferences in `mockup/WhatsInMyProtein.html`, preserving or explaining retained analysis state.
-- [ ] T023 [US4] Complete keyboard interaction and assistive-technology behavior in `mockup/WhatsInMyProtein.html` for inputs, buttons, menus, tables, validation messages, result regions, and charts.
-- [ ] T024 [US4] Implement explicit loading, failure, retry, duplicate-submission, and recovery states in `mockup/WhatsInMyProtein.html` for delayed analysis, prediction, search, and export operations.
-- [ ] T025 [US4] Implement responsive layout behavior in `mockup/WhatsInMyProtein.html` for narrow mobile and wide desktop widths, including intentional scrolling for long sequences and tables.
-- [ ] T026 [US4] Implement complete report download behavior in `mockup/WhatsInMyProtein.html` with a meaningful filename and input, normalized sequence, metrics, methods, assumptions, limitations, and analysis-version content.
-
-**Checkpoint**: User Story 4 is independently testable with keyboard, assistive-technology, responsive, recovery, and report scenarios.
-
----
+- [X] T015 [US4] Add accessible navigation controls and active-state semantics in `components/analysis/analysis-workspace.tsx`.
+- [X] T016 [US4] Add visible focus, live status, responsive layout, and intentional overflow behavior in `app/globals.css`.
+- [X] T017 [US4] Implement sample loading and report download with normalized sequence, metrics, assumptions, limitations, and analysis version in `components/analysis/analysis-workspace.tsx`.
+- [X] T018 [US4] Add browser acceptance scenarios for keyboard-only operation, mobile/desktop layouts, safe report download, and preserved state in `tests/browser/usability.md`.
 
 ## Phase 5: User Story 2 - Interpret Biological Features (Priority: P2)
 
-**Goal**: Present biological predictions with positions, provenance, uncertainty, and reliable failure states while preserving core analysis.
+**Goal**: Add prediction surfaces with provenance, uncertainty, and explicit service failure states.
 
-**Independent Test**: Analyze representative prediction fixtures, inspect available and no-signal outputs, then make the optional prediction provider unavailable and verify retry/unavailable behavior with core metrics intact.
+**Independent Test**: Request prediction data through the route boundary, inspect available/no-signal/unavailable states, and verify core metrics remain usable.
 
-### Tests for User Story 2
-
-- [ ] T027 [P] [US2] Create `tests/browser/biological-predictions.md` covering signal peptide, transmembrane, motif/domain, low-complexity/disorder, secondary-structure, no-strong-signal, and prediction-service-failure scenarios.
-- [ ] T028 [P] [US2] Create `tests/fixtures/prediction-results.json` with representative feature ranges, confidence/score fields, method/source/version values, and limitation text.
-
-### Implementation for User Story 2
-
-- [ ] T029 [US2] Add prediction state handling in `mockup/WhatsInMyProtein.html` for `pending`, `available`, `no-strong-signal`, `unavailable`, `failed`, and `retryable`, ensuring failed results cannot render as available.
-- [ ] T030 [US2] Implement signal-peptide and transmembrane prediction result views in `mockup/WhatsInMyProtein.html` with normalized-sequence residue ranges and clear prediction labels.
-- [ ] T031 [US2] Implement motif/domain, low-complexity/disorder, and secondary-structure result views in `mockup/WhatsInMyProtein.html` with legends and text alternatives that do not rely on color.
-- [ ] T032 [US2] Implement prediction provenance details in `mockup/WhatsInMyProtein.html` for method, source/model, version, confidence or score, and plain-language limitations.
-- [ ] T033 [US2] Implement optional prediction-provider loading, failure, unavailable, and retry behavior in `mockup/WhatsInMyProtein.html` so local core results remain visible when prediction services fail.
-
-**Checkpoint**: User Story 2 is independently testable and clearly distinguishes computed facts, predictions, and experimental confirmation.
-
----
+- [ ] T019 [US2] Define typed prediction entities and lifecycle states in `lib/predictions/types.ts`.
+- [ ] T020 [US2] Implement prediction loading, provenance, confidence, limitations, no-signal, failure, unavailable, and retry UI in `components/predictions/prediction-panel.tsx`.
+- [ ] T021 [US2] Connect `components/predictions/prediction-panel.tsx` to `app/api/predictions/route.ts` without exposing provider credentials to the browser.
+- [ ] T022 [US2] Add biological-prediction acceptance scenarios in `tests/browser/biological-predictions.md`.
 
 ## Phase 6: User Story 3 - Compare, Discover, and Report on Proteins (Priority: P2)
 
-**Goal**: Enable saved-sequence comparison, alignment, database discovery, filtering, and reproducible export.
+**Goal**: Add saved sequences, comparisons, alignments, discovery, filtering, and reproducible reports.
 
-**Independent Test**: Save valid sequences, compare two, align two and three sequences, search for a match and no match, filter the library, handle missing metadata, and export a report whose values match the interface.
+**Independent Test**: Save valid sequences, compare two, align two and three sequences, query the search route, filter saved items, handle missing metadata, and export matching results.
 
-### Tests for User Story 3
+- [ ] T023 [US3] Define saved-protein, comparison, alignment, database-match, and report types in `lib/protein/types.ts`.
+- [ ] T024 [US3] Implement client-side saved-library state and search/filter controls in `components/library/protein-library.tsx`.
+- [ ] T025 [US3] Implement side-by-side metric comparison and missing-metadata states in `components/comparison/protein-comparison.tsx`.
+- [ ] T026 [US3] Implement pairwise/multiple alignment display with differences, conserved positions, scoring assumptions, and gap assumptions in `components/comparison/alignment-view.tsx`.
+- [ ] T027 [US3] Connect database discovery UI to `app/api/protein-search/route.ts` with match, no-results, unavailable, and retryable states in `components/discovery/protein-search.tsx`.
+- [ ] T028 [US3] Implement reproducible comparison/alignment report export in `lib/reports/export-report.ts` and `components/reports/report-download.tsx`.
+- [ ] T029 [US3] Add comparison/discovery acceptance scenarios in `tests/browser/comparison-discovery.md`.
 
-- [ ] T034 [P] [US3] Create `tests/browser/comparison-discovery.md` covering side-by-side comparison, pairwise alignment, multiple alignment, database matches, no-match state, library filtering, missing metadata, and report export.
-- [ ] T035 [P] [US3] Create `tests/fixtures/comparison-sequences.json` with two different-length sequences, three alignment sequences, saved-library metadata variations, and expected difference/conservation cases.
+## Phase 7: Polish and Cross-Cutting Validation
 
-### Implementation for User Story 3
+- [ ] T030 [P] Run `npm run typecheck` and fix type errors across `app/`, `components/`, `lib/`, and `workers/`.
+- [ ] T031 [P] Run `npm run lint` and fix accessibility, unsafe rendering, and React/Next.js lint findings.
+- [ ] T032 [P] Run `npm run build` and verify the app can be deployed as a Next.js project on Vercel.
+- [ ] T033 [P] Add focused unit and browser test fixtures under `tests/fixtures/`, `tests/unit/`, and `tests/browser/` for all 38 aggregated scenarios.
+- [ ] T034 Review [ui-contract.md](./contracts/ui-contract.md), [data-model.md](./data-model.md), and [quickstart.md](./quickstart.md) against the final implementation and update only intentional behavior differences.
 
-- [ ] T036 [US3] Implement saved-protein entities and library state in `mockup/WhatsInMyProtein.html` with unique sequence identifiers, searchable name/accession fields, optional type metadata, normalized sequences, summaries, and analyzed timestamps.
-- [ ] T037 [US3] Implement side-by-side sequence comparison in `mockup/WhatsInMyProtein.html` for supported metrics, missing optional values, and text-labeled differences without color-only meaning.
-- [ ] T038 [US3] Implement pairwise and multiple-sequence alignment views in `mockup/WhatsInMyProtein.html` with matches, mismatches, insertions, deletions, positions, conserved positions, scoring assumptions, and gap assumptions.
-- [ ] T039 [US3] Implement external protein search states in `mockup/WhatsInMyProtein.html` for pending, matches, no-results, unavailable, and failed outcomes, including source, retrieval time, name, accession, organism, and length.
-- [ ] T040 [US3] Implement saved-library search, protein-type filtering, empty results, filter clearing, and missing-metadata display in `mockup/WhatsInMyProtein.html`.
-- [ ] T041 [US3] Implement comparison and alignment report export in `mockup/WhatsInMyProtein.html` with selected identifiers/sequences, methods, settings, results, assumptions, limitations, and analysis version.
+## Dependencies and Execution Order
 
-**Checkpoint**: User Story 3 is independently testable with saved sequences, comparison, alignment, discovery, filtering, and reproducible reports.
-
----
-
-## Phase 7: Polish & Cross-Cutting Concerns
-
-**Purpose**: Validate the integrated feature against the constitution, design contracts, and all aggregated scenarios.
-
-- [ ] T042 [P] Update `specs/001-protein-sequence-analysis/quickstart.md` with any final browser setup, provider-simulation, or report-opening steps discovered during implementation.
-- [ ] T043 [P] Run `tests/unit/validate-sequence.mjs` and `tests/unit/calculate-sequence.mjs` against `tests/fixtures/protein-sequences.json`; record and fix any normalization, boundary, composition, or determinism regressions.
-- [ ] T044 [P] Run the browser checks in `tests/browser/core-analysis.md`, `tests/browser/usability.md`, `tests/browser/biological-predictions.md`, and `tests/browser/comparison-discovery.md` against `mockup/WhatsInMyProtein.html`.
-- [ ] T045 Review `mockup/WhatsInMyProtein.html` for unsafe dynamic rendering, stale-result leakage, silent failures, unnecessary work during typing, clipped responsive content, and color-only status communication.
-- [ ] T046 Verify every scenario in `scratch/test_protein_sequence_analyzer.txt` has a passing result or an explicitly documented blocked dependency in `tests/browser/test-cases.md`.
-- [ ] T047 Update `specs/001-protein-sequence-analysis/contracts/ui-contract.md` and `specs/001-protein-sequence-analysis/data-model.md` when implementation behavior intentionally changes an observable state or field rule.
-
----
-
-## Dependencies & Execution Order
-
-### Phase Dependencies
-
-- **Setup (Phase 1)**: No dependencies; T001 can begin immediately and T002-T004 can run in parallel.
-- **Foundational (Phase 2)**: Depends on T001; T005-T009 establish shared behavior, while T010-T011 can be prepared in parallel once fixtures exist.
-- **User Story 1 (Phase 3)**: Depends on Phase 2; it is the recommended MVP and establishes validated analysis data for later stories.
-- **User Story 4 (Phase 4)**: Depends on Phase 2; it can proceed in parallel with US1, but report behavior benefits from the core result model.
-- **User Story 2 (Phase 5)**: Depends on US1 and the shared state contract; prediction displays consume normalized sequences and core analysis state.
-- **User Story 3 (Phase 6)**: Depends on US1 and the shared state contract; saved sequences, comparison, and alignment consume validated sequence entities.
-- **Polish (Phase 7)**: Depends on all desired user stories; T042-T047 can run in parallel after the corresponding implementation work is complete.
-
-### User Story Dependencies
-
-- **US1 (P1)**: Depends only on Foundational; no dependency on another user story.
-- **US4 (P1)**: Depends only on Foundational; can be implemented alongside US1, with report validation using US1 output.
-- **US2 (P2)**: Depends on US1's normalized sequence and analysis state; prediction failures must preserve US1 results.
-- **US3 (P2)**: Depends on US1's validated sequence and saved-protein model; comparison and reports may reuse US2 prediction metadata when available.
-
-### Within Each User Story
-
-- Story-specific fixtures and browser checks precede implementation where practical.
-- Shared data/state rules precede views and integrations.
-- Core rendering precedes integration with optional providers.
-- Each story reaches its checkpoint before dependent story work is treated as complete.
-
-## Parallel Execution Examples
-
-### MVP: User Story 1
-
-```text
-T002, T003, and T004 can run in parallel after T001.
-T010 and T011 can run in parallel after T002 and T004.
-T012 and T013 can run in parallel after the shared fixtures exist.
-T014 and T015 can be developed in parallel only if they use the agreed normalization/calculation contract.
-```
-
-### User Story 4
-
-```text
-T019 and T020 can run in parallel.
-T021, T022, and T025 can run in parallel after foundational state exists.
-T023 and T024 can run in parallel after navigation and status semantics are agreed.
-```
-
-### P2 Stories
-
-```text
-After US1 is complete, US2 and US3 can be assigned to separate implementers.
-Within US2, T027 and T028 can run in parallel.
-Within US3, T034 and T035 can run in parallel, followed by T036-T041 in dependency order.
-```
+- Setup tasks T001-T005 establish the Next.js and UI foundation.
+- Foundational tasks T006-T010 establish shared domain types, calculations, worker readiness, and server-route boundaries.
+- US1 tasks T011-T014 depend on T006-T007 and are the MVP.
+- US4 tasks T015-T018 depend on the app shell and can proceed in parallel with late US1 work.
+- US2 tasks T019-T022 depend on US1 normalized sequence types and T010's prediction route.
+- US3 tasks T023-T029 depend on US1 sequence types and T010's search route.
+- T030-T034 run after the desired stories are implemented.
 
 ## Implementation Strategy
 
-1. Complete Setup and Foundational work without introducing a framework or backend.
-2. Deliver US1 as the MVP: validated deterministic core analysis with safe error states.
-3. Deliver US4 alongside or immediately after US1 so the MVP is accessible, responsive, and recoverable.
-4. Add US2 prediction surfaces with explicit optional-service states.
-5. Add US3 comparison, discovery, filtering, and reproducible reports.
-6. Run the full quickstart and all 38 aggregated scenarios before review.
+1. Ship US1 as the MVP: local, deterministic core analysis.
+2. Keep US4 close behind so the MVP is accessible, responsive, and reportable.
+3. Add prediction and discovery routes without coupling core analysis to remote services.
+4. Add persistence only after saved-library behavior has been validated.
+5. Move long-sequence/alignment workloads to the worker when measurements show main-thread impact.

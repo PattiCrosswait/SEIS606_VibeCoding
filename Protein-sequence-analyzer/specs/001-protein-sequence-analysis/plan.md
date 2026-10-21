@@ -6,72 +6,84 @@
 
 ## Summary
 
-Extend the existing single-page Protein Sequence Analyzer mockup into a trustworthy, accessible analysis experience. The feature will validate and normalize raw or FASTA sequence input, calculate deterministic core properties, present biological predictions with provenance and uncertainty, support saved-sequence comparison and discovery workflows, and provide complete reports. The design keeps local sequence analysis usable when optional prediction or database services are unavailable and treats all user input as untrusted data.
+Build the Protein Sequence Analyzer as a maintainable Next.js web application using TypeScript and customizable shadcn/ui-style components, with Vercel as the intended deployment platform. Core sequence parsing and calculations run locally for fast, deterministic feedback. Optional prediction and external protein-search capabilities use server-side route boundaries so provider credentials and error normalization stay out of the browser. Client state supports the initial MVP, while a Web Worker entry point is available for long-sequence or alignment workloads.
 
 ## Technical Context
 
-**Language/Version**: Browser-based HTML, CSS, and JavaScript; no build language or version is currently declared
+**Language/Version**: TypeScript with Next.js App Router
 
-**Primary Dependencies**: Existing inline browser implementation; optional external prediction/database providers are integration boundaries, not required for local core analysis
+**Primary Dependencies**: Next.js, React, Tailwind CSS, lucide-react, clsx, tailwind-merge, class-variance-authority, and shadcn/ui-style local components
 
-**Storage**: In-memory application state for the current analysis and saved-library prototype; persistent storage is not required by the feature
+**Storage**: Client-side state for the initial MVP; persistent storage and authentication are deferred until the core workflows are validated
 
-**Testing**: Browser-level acceptance validation based on the 38 aggregated scenarios, plus focused regression checks for parsing, calculations, accessibility, responsive layout, and failure states
+**Testing**: TypeScript checks, ESLint, focused sequence-module regression tests, browser acceptance checks, accessibility review, and production build validation
 
-**Target Platform**: Modern desktop and mobile web browsers
+**Target Platform**: Modern desktop and mobile browsers deployed through Vercel
 
-**Project Type**: Single-page web application
+**Project Type**: Full-stack-capable Next.js web application
 
-**Performance Goals**: Keep typing, paste, navigation, filtering, and result review responsive; complete core analysis for representative short and 1,000-residue sequences without freezing the interface
+**Performance Goals**: Keep typing and navigation responsive; complete local analysis for representative short and 1,000-residue sequences without freezing the interface; move expensive future workloads to `workers/sequence-analysis.worker.ts`
 
-**Constraints**: Safe rendering of sequence text; deterministic calculations; no misleading fallback results; keyboard and screen-reader access; no core-analysis dependency on external services; intentional overflow handling for long sequences and tables
+**Constraints**: Safe rendering of untrusted sequence input; deterministic calculations; no misleading fallback results; keyboard and screen-reader access; external provider credentials only behind server routes; no persistent storage requirement for the MVP
 
-**Scale/Scope**: One analysis workspace with saved-library, comparison, discovery, prediction, report, and preferences surfaces; initial validation covers the 38 aggregated test scenarios and sequences of at least 1,000 residues
+**Scale/Scope**: One Next.js application with analysis, saved-library, comparison, discovery, prediction, reports, and preferences surfaces; initial implementation establishes the core analysis shell and integration boundaries
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+*GATE: Must pass before implementation and re-check after implementation.*
 
-- **Code Quality**: PASS. The plan separates parsing, calculation, state, display, and optional integrations so each behavior has an identifiable owner.
-- **Testable Behavior**: PASS. Every user-visible flow has an acceptance scenario; parsing, boundary, invalid-input, loading, and recovery cases are included in the source test list.
-- **Consistent User Experience**: PASS. Shared validation, status, navigation, keyboard, responsive, and non-color requirements are explicit in the spec and UI contract.
-- **Performance by Default**: PASS. The design bounds work during typing, supports explicit analysis, and measures representative long sequences before release.
-- **Trustworthy Results**: PASS. Normalization precedes calculation, predictions include provenance and limitations, and failed or stale results cannot appear current.
+- **Code Quality**: PASS. Domain calculations live in `lib/sequence`, UI primitives live in `components/ui`, and page composition lives in `components/analysis`.
+- **Testable Behavior**: PASS. The architecture supports focused module checks, browser scenarios, API-route state checks, and production-build validation.
+- **Consistent User Experience**: PASS. Shared buttons, cards, text areas, status regions, navigation, responsive styles, and accessible focus behavior are established.
+- **Performance by Default**: PASS. Core calculation is explicit and local; a Worker entry point is available for future expensive workloads.
+- **Trustworthy Results**: PASS. Normalization and validation precede valid metrics; invalid, unavailable, and predicted states remain explicit.
 
 ## Project Structure
 
-### Documentation (this feature)
-
 ```text
-specs/001-protein-sequence-analysis/
-├── plan.md
-├── research.md
-├── data-model.md
-├── quickstart.md
-└── contracts/
-    └── ui-contract.md
-```
+app/
+├── api/
+│   ├── predictions/route.ts
+│   └── protein-search/route.ts
+├── globals.css
+├── layout.tsx
+└── page.tsx
 
-### Source Code (repository root)
+components/
+├── analysis/analysis-workspace.tsx
+└── ui/
+    ├── button.tsx
+    ├── card.tsx
+    └── textarea.tsx
 
-```text
+lib/
+├── sequence/
+│   ├── analyze.ts
+│   └── types.ts
+└── utils.ts
+
+workers/
+└── sequence-analysis.worker.ts
+
+tests/
+├── browser/
+├── fixtures/
+└── unit/
+
 mockup/
-└── WhatsInMyProtein.html       # Current single-page prototype and initial delivery surface
-
-scratch/
-└── test_protein_sequence_analyzer.txt  # Aggregated acceptance scenarios
+└── WhatsInMyProtein.html  # Preserved visual reference
 ```
 
-**Structure Decision**: Preserve the current single-page prototype structure for the initial feature. Organize the design artifacts under the feature directory and evolve the existing HTML surface rather than introducing a backend or build system before the product needs one. Keep calculation and validation behavior separable within the page so it can later move into testable modules without changing user-facing contracts.
+**Structure Decision**: Migrate the prototype into a Next.js App Router application while retaining the original HTML mockup as a visual reference. Use local, composable UI components rather than a rigid component package. Keep domain logic framework-independent and expose optional integrations through server routes.
 
 ## Post-Design Constitution Check
 
-- **Code Quality**: PASS. The data model and UI contract define explicit ownership and states for sequence, analysis, prediction, comparison, discovery, and reports.
-- **Testable Behavior**: PASS. The quickstart maps the source scenarios to runnable browser validation and identifies focused calculation fixtures.
-- **Consistent User Experience**: PASS. The UI contract requires shared status semantics, keyboard access, responsive behavior, and non-color cues across all surfaces.
-- **Performance by Default**: PASS. The plan limits core analysis to validated input, avoids unnecessary work during editing, and includes a 1,000-residue responsiveness check.
-- **Trustworthy Results**: PASS. Data-model status fields distinguish invalid, stale, unavailable, failed, predicted, and complete states; reports carry methods and limitations.
+- **Code Quality**: PASS. File ownership is explicit and avoids putting all behavior into one HTML document.
+- **Testable Behavior**: PASS. Domain functions can be checked independently from browser rendering and server-route availability states.
+- **Consistent User Experience**: PASS. Shared UI primitives and global focus/responsive styles establish common behavior.
+- **Performance by Default**: PASS. The client does not need remote services for core metrics, and worker infrastructure is ready for expensive operations.
+- **Trustworthy Results**: PASS. Invalid input returns an explicit invalid analysis state, while optional API routes return unavailable states instead of fake results.
 
 ## Complexity Tracking
 
-No constitution violations require justification. The selected single-page structure satisfies the current repository scope.
+No constitution violations require justification. The additional framework is justified by the multi-surface product scope and intended Vercel deployment.

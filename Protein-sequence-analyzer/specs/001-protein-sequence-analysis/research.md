@@ -8,6 +8,30 @@
 - Introduce a backend and database immediately: rejected because the current scope does not require accounts, cross-device persistence, or server-owned computation.
 - Add a framework and build pipeline before feature validation: rejected because it would add unrelated setup cost and obscure whether the user-facing scenarios work.
 
+## Decision: Use Next.js App Router with TypeScript and Vercel as the deployment target
+
+**Rationale**: The product now has several navigable surfaces, reusable interactive controls, optional server-side integrations, accessibility requirements, and a stated preference for Vercel. Next.js provides a coherent route and server-function boundary, while Vercel provides a native deployment path and preview environments.
+
+**Alternatives considered**:
+- Continue with one static HTML file: rejected because it would make shared state, route boundaries, reusable components, and maintainable testing increasingly difficult.
+- Add a separate backend immediately: rejected because the MVP can keep core analysis local and use Next.js route handlers for optional integrations.
+
+## Decision: Use local shadcn/ui-style components
+
+**Rationale**: The application needs composable buttons, cards, text areas, navigation, status, tables, dialogs, and accessible focus patterns. Local components preserve control over scientific visualization and the existing visual identity while following shadcn/ui conventions.
+
+**Alternatives considered**:
+- Adopt a fully opinionated component library: rejected because it would constrain the existing visual language and scientific result displays.
+- Build every control ad hoc: rejected because it risks inconsistent interaction and accessibility behavior.
+
+## Decision: Keep core calculations client-side and expose expensive work through a Web Worker
+
+**Rationale**: Local normalization and sequence metrics provide immediate results without network dependency. A worker entry point prevents future long-sequence or alignment workloads from blocking the browser interaction path.
+
+**Alternatives considered**:
+- Send all calculations to the server: rejected because basic analysis does not require remote execution and would add latency and availability dependence.
+- Run all expensive work on the main thread: rejected by the constitution's performance requirement.
+
 ## Decision: Analyze only a validated normalized sequence
 
 **Rationale**: FASTA headers and permitted whitespace should be removed before validation and calculation. Original input must remain available separately so the user can audit what was submitted. Invalid or empty normalized input must stop analysis and preserve the edited value.
