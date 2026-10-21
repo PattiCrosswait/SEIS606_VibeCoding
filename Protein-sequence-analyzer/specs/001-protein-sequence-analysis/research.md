@@ -1,8 +1,8 @@
 # Research: Protein Sequence Analysis
 
-## Decision: Keep the initial delivery as a single-page browser application
+## Decision: Keep core analysis local while using a single Next.js application
 
-**Rationale**: The repository contains one working HTML mockup and no package manifest, server, or test runner. The feature can deliver local parsing, validation, calculations, visualization, saved-library behavior, and report generation without adding infrastructure. Optional remote capabilities can be represented with explicit loading, unavailable, and retry states.
+**Rationale**: The application now has a Next.js App Router shell with local deterministic parsing, validation, calculations, visualization, saved-library behavior, comparison, and report generation. Optional remote capabilities remain behind route handlers and expose explicit loading, unavailable, and retry states.
 
 **Alternatives considered**:
 - Introduce a backend and database immediately: rejected because the current scope does not require accounts, cross-device persistence, or server-owned computation.

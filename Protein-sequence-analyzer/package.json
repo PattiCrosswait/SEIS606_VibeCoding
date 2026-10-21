@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/unit/sequence-analysis.test.ts"
+    "test": "tsx --test tests/unit/*.test.ts"
   },
   "keywords": [
     "protein",

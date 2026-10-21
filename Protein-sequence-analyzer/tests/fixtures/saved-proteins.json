@@ -1,0 +1,4 @@
+[
+  { "sequenceId": "fixture-1", "name": "Alpha protein", "type": "enzyme", "sequence": "MKTIIALSYIFCLVFADYKDDDDK" },
+  { "sequenceId": "fixture-2", "name": "Unnamed record", "accession": "P00001", "sequence": "MKWVTFISLLLLFSSAYSRGVFRRDTHKSEIAHRFKDLGE" }
+]

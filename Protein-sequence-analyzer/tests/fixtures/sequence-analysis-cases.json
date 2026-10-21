@@ -1,0 +1,6 @@
+[
+  { "name": "single alanine", "input": "A", "length": 1 },
+  { "name": "lowercase whitespace", "input": "a v i l", "length": 4 },
+  { "name": "empty", "input": "", "status": "invalid" },
+  { "name": "unsupported", "input": "MZ", "status": "invalid" }
+]

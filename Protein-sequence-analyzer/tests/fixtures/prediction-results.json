@@ -1,0 +1,7 @@
+[
+  { "featureType": "signal-peptide", "status": "available", "features": [{ "label": "N-terminal signal peptide", "residueRange": { "start": 1, "end": 20 } }] },
+  { "featureType": "transmembrane", "status": "no-strong-signal", "features": [] },
+  { "featureType": "motif", "status": "unavailable", "features": [] },
+  { "featureType": "disorder", "status": "failed", "features": [] },
+  { "featureType": "secondary-structure", "status": "retryable", "features": [] }
+]

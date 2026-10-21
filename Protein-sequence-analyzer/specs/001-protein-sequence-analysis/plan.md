@@ -50,13 +50,23 @@ app/
 └── page.tsx
 
 components/
-├── analysis/analysis-workspace.tsx
+├── analysis/
+├── comparison/
+├── discovery/
+├── layout/
+├── library/
+├── predictions/
+├── reports/
 └── ui/
     ├── button.tsx
     ├── card.tsx
     └── textarea.tsx
 
 lib/
+├── integrations/contracts.ts
+├── predictions/
+├── protein/
+├── reports/
 ├── sequence/
 │   ├── analyze.ts
 │   └── types.ts
