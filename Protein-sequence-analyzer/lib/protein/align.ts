@@ -4,16 +4,49 @@ export function alignPairwise(
   left: { id: string; name: string; sequence: string },
   right: { id: string; name: string; sequence: string },
 ): AlignmentResult {
-  const width = Math.max(left.sequence.length, right.sequence.length);
-  const leftAligned = left.sequence.padEnd(width, "-");
-  const rightAligned = right.sequence.padEnd(width, "-");
+  const matchScore = 2;
+  const mismatchScore = -1;
+  const gapScore = -2;
+  const rows = left.sequence.length + 1;
+  const columns = right.sequence.length + 1;
+  const scores = Array.from({ length: rows }, () => Array(columns).fill(0));
+  for (let row = 1; row < rows; row += 1) scores[row][0] = row * gapScore;
+  for (let column = 1; column < columns; column += 1) scores[0][column] = column * gapScore;
+  for (let row = 1; row < rows; row += 1) {
+    for (let column = 1; column < columns; column += 1) {
+      scores[row][column] = Math.max(
+        scores[row - 1][column - 1] + (left.sequence[row - 1] === right.sequence[column - 1] ? matchScore : mismatchScore),
+        scores[row - 1][column] + gapScore,
+        scores[row][column - 1] + gapScore,
+      );
+    }
+  }
+  let row = left.sequence.length;
+  let column = right.sequence.length;
+  let leftAligned = "";
+  let rightAligned = "";
+  while (row > 0 || column > 0) {
+    if (row > 0 && column > 0 && scores[row][column] === scores[row - 1][column - 1] + (left.sequence[row - 1] === right.sequence[column - 1] ? matchScore : mismatchScore)) {
+      leftAligned = left.sequence[row - 1] + leftAligned;
+      rightAligned = right.sequence[column - 1] + rightAligned;
+      row -= 1;
+      column -= 1;
+    } else if (row > 0 && scores[row][column] === scores[row - 1][column] + gapScore) {
+      leftAligned = left.sequence[row - 1] + leftAligned;
+      rightAligned = "-" + rightAligned;
+      row -= 1;
+    } else {
+      leftAligned = "-" + leftAligned;
+      rightAligned = right.sequence[column - 1] + rightAligned;
+      column -= 1;
+    }
+  }
+  const width = leftAligned.length;
   const differences: AlignmentDifference[] = [];
-  let score = 0;
   for (let index = 0; index < width; index += 1) {
     const a = leftAligned[index];
     const b = rightAligned[index];
     const kind = a === b ? "match" : a === "-" ? "insertion" : b === "-" ? "deletion" : "mismatch";
-    if (kind === "match") score += 1;
     differences.push({ position: index + 1, left: a, right: b, kind });
   }
   return {
@@ -24,8 +57,8 @@ export function alignPairwise(
     ],
     differences,
     conservedPositions: differences.filter((difference) => difference.kind === "match").map((difference) => difference.position),
-    score,
-    scoringAssumptions: "Direct position comparison; match +1, mismatch 0, gap 0. Gaps are padded for display.",
+    score: scores[left.sequence.length][right.sequence.length],
+    scoringAssumptions: "Needleman-Wunsch global alignment; match +2, mismatch -1, linear gap -2.",
   };
 }
 

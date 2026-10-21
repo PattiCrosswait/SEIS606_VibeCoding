@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { analyzeSequence } from "@/lib/sequence/analyze";
-import { createSavedProtein, readLibrary, writeLibrary } from "@/lib/protein/library";
+import { createSavedProtein, deleteLibraryProtein, readLibrary, syncLibraryProtein, writeLibrary } from "@/lib/protein/library";
 import { alignMultiple, alignPairwise } from "@/lib/protein/align";
 import type { SavedProtein } from "@/lib/protein/types";
 import { createAnalysisReport, createComparisonReport } from "@/lib/reports/export-report";
@@ -33,6 +33,19 @@ export function AnalysisWorkspace() {
   const report = useMemo(() => createAnalysisReport(submittedInput, analysis), [submittedInput, analysis]);
   const isInvalid = analysis.status === "invalid";
 
+  useEffect(() => {
+    let active = true;
+    fetch("/api/library")
+      .then((response) => response.ok ? response.json() as Promise<{ proteins?: SavedProtein[] }> : Promise.reject(new Error("Library unavailable")))
+      .then((body) => {
+        if (!active || !Array.isArray(body.proteins) || !body.proteins.length) return;
+        setLibrary(body.proteins);
+        writeLibrary(body.proteins);
+      })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, []);
+
   function submit() { setSubmittedInput(input); }
   function saveCurrent() {
     if (analysis.status !== "valid") return;
@@ -40,11 +53,13 @@ export function AnalysisWorkspace() {
     const next = [...library, protein];
     setLibrary(next);
     writeLibrary(next);
+    void syncLibraryProtein(protein).catch(() => undefined);
   }
   function removeProtein(id: string) {
     const next = library.filter((protein) => protein.sequenceId !== id);
     setLibrary(next);
     writeLibrary(next);
+    void deleteLibraryProtein(id).catch(() => undefined);
   }
   function compare(proteins: SavedProtein[]) {
     setSelected(proteins);

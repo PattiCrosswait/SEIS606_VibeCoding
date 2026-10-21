@@ -9,8 +9,9 @@ The repository includes the Spec Kit specification, plan, tasks, supporting
 contracts, fixtures, automated tests, and a quickstart guide.
 
 The application is partly complete in one area. Biological predictions now use
-a built-in deterministic heuristic provider with explicit provenance and
-limitations. Protein search now uses the public UniProt REST API, with
+a built-in deterministic heuristic provider supplemented by EMBL-EBI Search
+when matching curated records are available. Both sources expose provenance
+and limitations. Protein search uses the public UniProt REST API, with
 timeouts and explicit failure states.
 
 The submission package was missing a README, a completed test log, a written

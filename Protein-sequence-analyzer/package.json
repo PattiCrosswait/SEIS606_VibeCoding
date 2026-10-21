@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/unit/*.test.ts"
+    "test": "tsx --test tests/unit/*.test.ts",
+    "test:e2e": "playwright test"
   },
   "keywords": [
     "protein",
@@ -27,10 +28,13 @@
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "autoprefixer": "^10.6.1",
+    "better-sqlite3": "^13.0.3",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.4.2",
     "postcss": "^8.5.31",

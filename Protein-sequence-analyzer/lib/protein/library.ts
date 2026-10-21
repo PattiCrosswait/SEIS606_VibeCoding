@@ -65,6 +65,16 @@ export function writeLibrary(proteins: SavedProtein[]): void {
   }
 }
 
+export async function syncLibraryProtein(protein: SavedProtein): Promise<void> {
+  const response = await fetch("/api/library", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(protein) });
+  if (!response.ok) throw new Error("Server library save failed.");
+}
+
+export async function deleteLibraryProtein(sequenceId: string): Promise<void> {
+  const response = await fetch(`/api/library?id=${encodeURIComponent(sequenceId)}`, { method: "DELETE" });
+  if (!response.ok) throw new Error("Server library delete failed.");
+}
+
 export function filterLibrary(proteins: SavedProtein[], query: string, type = "all"): SavedProtein[] {
   const normalized = query.trim().toLowerCase();
   return proteins.filter((protein) => {

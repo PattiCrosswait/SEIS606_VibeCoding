@@ -22,10 +22,12 @@ and the release checklist is in [PRE-FLIGHT.md](PRE-FLIGHT.md).
 | F-05 | Long sequence | Unit test using a 1,000-residue fixture | Analysis completes and composition totals equal sequence length | Fixed/verified | — |
 | F-06 | Markup-like input | Unit test using markup-like text | Input is rejected as a sequence and is treated as text rather than executable markup | Fixed/verified | — |
 | F-07 | Repeatability | Unit test analyzes identical input more than once | Results are deterministic and the analysis version is exposed | Fixed/verified | — |
-| F-08 | Local prediction provider | Unit test and live POST to `/api/predictions` with a representative sequence | The route returns heuristic predictions with method, source, version, ranges, and limitations; unsupported features remain explicitly no-strong-signal | Fixed/verified | — |
+| F-08 | Local and specialist prediction providers | Unit test and live POST to `/api/predictions` with a representative sequence | The route returns heuristic predictions and attempts EMBL-EBI Search supplementation with method, source, version, ranges, and limitations; provider no-match/failure remains explicit while local results remain available | Fixed/verified | — |
 | F-09 | Protein-search provider unavailable | Unit test posts to `/api/protein-search` without a provider | The route returns an explicit unavailable response | Deferred provider integration | Medium |
 | F-10 | Pairwise and multiple alignment | Unit tests for two and three saved sequences | Matches, mismatches, gaps, and conserved positions are represented | Fixed/verified | — |
 | F-11 | Report contents | Unit test generates a comparison report | Report includes scoring assumptions and aligned sequences | Fixed/verified | — |
+| F-12 | Durable library persistence | Playwright flow saved proteins through the application and opened the comparison view | Saved proteins were available to the comparison workflow; server persistence is implemented through `/api/library` and SQLite | Fixed/verified | — |
+| F-13 | Rigorous pairwise alignment | Unit and Playwright tests compare different-length sequences | Needleman-Wunsch alignment reports matches, mismatches, gaps, and scoring assumptions | Fixed/verified | — |
 
 Automated validation run from the repository root:
 
@@ -34,6 +36,7 @@ npm run typecheck  # passed
 npm run lint       # passed
 npm test           # 10 tests passed
 npm run build      # passed
+npm run test:e2e   # 2 browser flows passed
 ```
 
 ## Security probing

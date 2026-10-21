@@ -4,6 +4,8 @@ out/
 coverage/
 *.tsbuildinfo
 *.log
+protein-library.sqlite*
+test-results/
 .env*
 !.env.example
 .DS_Store

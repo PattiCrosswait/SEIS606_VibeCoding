@@ -36,10 +36,10 @@ Open the local URL printed by Next.js, normally
 7. Use **Preferences** to search UniProt by accession or text.
 
 The core analysis and the built-in prediction provider run locally and
-deterministically. Local predictions are heuristic hypotheses with explicit
-methods and limitations; they are not experimental findings. Protein
-discovery uses the public UniProt REST API and reports provider failures
-explicitly.
+deterministically. Local predictions are heuristic hypotheses with explicit methods and
+limitations; they are not experimental findings. Prediction requests also
+attempt to supplement those heuristics with EMBL-EBI Search's public UniProt
+domain. Provider failures fall back to local results explicitly.
 
 ## Validation commands
 
@@ -47,6 +47,7 @@ explicitly.
 npm run typecheck
 npm run lint
 npm test
+npm run test:e2e
 npm run build
 ```
 
@@ -68,6 +69,10 @@ npm run build
 - The built-in prediction provider uses deterministic heuristics rather than
   specialist biological databases. Protein discovery uses the public UniProt
   REST API with an eight-second timeout and short-lived server cache.
+- Saved proteins are mirrored to a local SQLite database (`protein-library.sqlite`)
+  through `/api/library`; browser local storage remains an offline fallback.
+- Pairwise comparison uses Needleman-Wunsch global alignment with documented
+  match, mismatch, and gap scores.
 - Browser acceptance checks are documented in
   [tests/browser/](./tests/browser/), but they are not an automated Playwright
   suite.
